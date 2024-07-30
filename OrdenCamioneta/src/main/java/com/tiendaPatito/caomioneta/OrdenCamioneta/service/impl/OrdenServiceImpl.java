@@ -81,12 +81,13 @@ public class OrdenServiceImpl implements OrdenService {
       
 
         BigDecimal totalPrice = BigDecimal.ZERO;
-        for (Camioneta camioneta : trucks) {
+	for (Camioneta camioneta : trucks) {
 
-            totalPrice = orderDTO.getIsDecuento() == 1 ?
+            BigDecimal totalNeto  = orderDTO.getIsDecuento() == 1 ?
                     totalPrice.add(camioneta.getPrecio().multiply(camioneta.getDescuento()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP))
                     : camioneta.getPrecio();
             camioneta.setDisponibilidad(camioneta.getDisponibilidad() - 1);
+            totalPrice = totalPrice.add(totalNeto);
             truckRepository.save(camioneta);
         }
         order.setTotal(totalPrice);
